@@ -1,6 +1,9 @@
 # FinalYearProject
 2022-2023 Final Year Project: Automatic Attendancee Management System using Face Recognition
 
+Environment Requirements:
+stated in reqirements.txt
+
 Database Installation Guide
 1. create database:attendance ; charset=utf8mb4; in MySQL
 2. Change the database connection parameters in config.py
