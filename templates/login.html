@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/sign-in.css" rel="stylesheet">
+    <script src="/static/js/jquery.js"></script>
+    <title>Attendance System</title>
+</head>
+
+<body class="text-center">
+
+    <main class="form-signin w-100 m-auto">
+        <form method="post">
+            <h1 class="h3 mb-3 fw-normal">Attendance System</h1>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="floatingInput" name="username" placeholder="Username">
+                <label for="floatingInput">Username</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="floatingPassword" name="password"
+                    placeholder="Password">
+                <label for="floatingPassword">Password</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="button">Log In</button>
+        </form>
+    </main>
+    <script>
+        $("button").click(function (event) {
+            var username = $("input[name='username']").val();
+            var password = $("input[name='password']").val();
+            if (username === "" || password === "") {
+                alert("User name or password cannot be empty!");
+            } else {
+                data = {
+                    "username": username,
+                    "password": password
+                }
+                $.post("/login", data, function (res) {
+                    if (res["code"] !== 0) {
+                        alert(res["msg"]);
+                    } else {
+                        window.location = "/";
+                    }
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>

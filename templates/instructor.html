@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+    <style>
+        .course {
+            margin-top: 5vh;
+        }
+    </style>
+    <title>Attendance System</title>
+</head>
+
+<body>
+    <main class="d-flex flex-nowrap" style="height: 100vh;">
+        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <span class="fs-4">Attendance System</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#" class="nav-link text-white active" id="side-1">Attendance</a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white" id="side-2">Create Course</a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link text-white" id="side-3">Generate Report</a>
+                </li>
+            </ul>
+            <hr>
+            <div style="font-size: 20px;cursor: pointer;text-align: center;">
+                <a href="/logout" style="text-decoration: none;color: white;">Log Out</a>
+            </div>
+        </div>
+        <div class="course container" style="display: none">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <form class="needs-validation" action="#" method="post">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control form-control-lg" placeholder="Course Name"
+                                id="c_name">
+                            <button class="btn btn-outline-primary" type="button" id="add">Create Course</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-10" style="margin-top: 10vh">
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col"> </th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Create Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stu in students %}
+                            <tr>
+                                <td><input class="form-check-input" type="checkbox" id="{{ stu.uid }}"></td>
+                                <td>{{ stu.uid }}</td>
+                                <td>{{ stu.username }}</td>
+                                <td>{{ stu.create_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="attend container" style="margin-top: 10vh">
+            <div class="row justify-content-center">
+                <div class="d-grid gap-2">
+                    <button id="download" type="button" class="btn btn-outline-primary" style="margin: 0 450px">Export
+                        to
+                        Excel
+                    </button>
+                </div>
+                <ul class="nav nav-tabs" id="myTab" role="tablist" style="margin-top: 5vh">
+                    {% for c_name, _ in attendances.items() %}
+                    {% if loop.first %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                            data-bs-target="#home-tab-pane{{ loop.index }}" type="button" role="tab"
+                            aria-controls="home-tab-pane" aria-selected="true">{{ c_name }}
+                        </button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="home-tab" data-bs-toggle="tab"
+                            data-bs-target="#home-tab-pane{{ loop.index }}" type="button" role="tab"
+                            aria-controls="home-tab-pane" aria-selected="true">{{ c_name }}
+                        </button>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    {% for _, datas in attendances.items() %}
+                    {% if loop.first %}
+                    <div class="tab-pane fade show active" id="home-tab-pane{{ loop.index }}" role="tabpanel"
+                        aria-labelledby="home-tab" tabindex="0">
+                        <table class="table table-striped text-center">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Arrival Time</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col"> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in datas %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ data.u_name }}</td>
+                                    <td>{{ data.arr_time }}</td>
+                                    <td>{{ data.state }}</td>
+                                    <td>
+                                        <a href="/update?id={{ data.id }}" type="button"
+                                            class="btn btn-primary btn-sm">Modify</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="tab-pane fade show" id="home-tab-pane{{ loop.index }}" role="tabpanel"
+                        aria-labelledby="home-tab" tabindex="0">
+                        <table class="table table-striped text-center">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Arrival Time</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col"> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in datas %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ data.u_name }}</td>
+                                    <td>{{ data.arr_time }}</td>
+                                    <td>{{ data.state }}</td>
+                                    <td>
+                                        <a href="/update?id={{ data.id }}" type="button"
+                                            class="btn btn-primary btn-sm">Modify</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="new_course container" style="display: none">
+            <div class="row justify-content-center">
+                <div class="col-lg-10" style="margin-top: 10vh">
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>CourseName</th>
+                            </tr>
+                        </thead>
+                        <tbody id="t_body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="choose container" style="display: none">
+            <div class="row justify-content-center">
+                <div class="col-lg-8" style="margin-top: 30vh">
+                    {% if courses %}
+                    <label class="form-label" for="course">Please select a course</label>
+                    <select class="form-select form-select-lg" id="course">
+                        {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                    </select><br>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="button" id="submit">Submit</button>
+                    </div>
+                    {% else %}
+                    <div style="text-align: center;margin-top: 10vh">
+                        <p style="font-size: 30px;font-weight: bold">You have not created any courses yet,<br> please
+                            create
+                            a course first!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="report container" style="display: none">
+            <div class="row justify-content-center">
+                <div class="col-lg-10" style="height: 70vh;margin-top: 20vh">
+                    <div id="figure" style="height: 100%"></div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $("#download").click(function () {
+                var tab_name = $("button#home-tab.nav-link.active").text();
+                tab_name = tab_name.trim().replace('\n', '');
+                let params = {};
+                params['c_name'] = tab_name
+                console.log(params)
+                $.ajax({
+                    url: '/export',
+                    type: 'post',
+                    data: { 'c_name': tab_name },
+                    success: function (result) {
+                        if (result["code"] === -1) {
+                            alert(result["msg"]);
+                        } else {
+                            let blob = new Blob([result]);
+                            let a = document.createElement('a');
+                            let url = window.URL.createObjectURL(blob);
+                            a.href = url;
+                            a.download = tab_name + ".csv";
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                        }
+                    },
+                    error: function (result) {
+                        console.log(result)
+                    }
+                })
+            })
+            $("#submit").click(function () {
+                var cid = $("option:selected").val();
+                if (cid === undefined) {
+                    alert("Please chose a course!");
+                } else {
+                    $.post("/att_info", { "cid": cid }, function (res) {
+                        if (res["code"] === 0) {
+                            $(".course").hide();
+                            $(".attend").hide();
+                            $(".choose").hide();
+                            $(".new_course").hide();
+                            $(".report").show();
+                            console.log(res["res"]["names"]);
+                            if (res["res"]["names"].length === 0) {
+                                console.log("NO");
+                                $("#figure").html("<div style=\"text-align: center;margin-top: 20vh\"> <p style=\"font-size: 30px;font-weight: bold\">There is no attendance data for " + res["res"]["c_name"] + ".</p></div>");
+                            } else {
+                                console.log("OK");
+                                var dom = document.getElementById('figure');
+                                var myChart = echarts.init(dom, null, {
+                                    renderer: 'canvas',
+                                    useDirtyRect: false
+                                });
+                                var option;
+                                option = {
+                                    title: {
+                                        show: true,
+                                        text: res["res"]["c_name"] + " class attendance statistics",
+                                        left: 'center',
+                                        textStyle: {
+                                            fontSize: 25,
+                                        },
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: res["res"]["names"],
+                                        axisLabel: {
+                                            textStyle: {
+                                                fontSize: "20",
+                                            },
+                                        },
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    },
+                                    series: [
+                                        {
+                                            data: res["res"]["att_times"],
+                                            type: 'bar'
+                                        }
+                                    ]
+                                };
+                                if (option && typeof option === 'object') {
+                                    myChart.setOption(option);
+                                }
+                                window.addEventListener('resize', myChart.resize);
+                            }
+                        } else {
+                            alert(res["msg"]);
+                        }
+                    })
+                }
+            })
+            $("#side-1").click(function () {
+                $(".course").hide();
+                $(".choose").hide();
+                $(".attend").show();
+                $(".new_course").hide();
+                $(".report").hide();
+                $("#side-1").addClass("active");
+                $("#side-2").removeClass("active");
+                $("#side-3").removeClass("active");
+            })
+            $("#side-2").click(function () {
+                $(".course").show();
+                $(".attend").hide();
+                $(".choose").hide();
+                $(".new_course").hide();
+                $(".report").hide();
+                $("#side-1").removeClass("active");
+                $("#side-2").addClass("active");
+                $("#side-3").removeClass("active");
+            })
+            $("#side-3").click(function () {
+                $(".course").hide();
+                $(".attend").hide();
+                $(".choose").show();
+                $(".new_course").hide();
+                $(".report").hide();
+                $("#side-1").removeClass("active");
+                $("#side-2").removeClass("active");
+                $("#side-3").addClass("active");
+            })
+            $("#add").click(function () {
+                var c_name = $("#c_name");
+                var s_stu = $("input:checkbox:checked");
+                var stu_list = []
+                if (c_name.val() !== "" && s_stu.length !== 0) {
+                    for (let i = 0; i < s_stu.length; i++) {
+                        stu_list.push(s_stu[i].id);
+                    }
+                    data = {
+                        "c_name": c_name.val(),
+                        "stu_list": stu_list
+                    }
+                    console.log(stu_list);
+                    $.post("/add_course", data, function (res) {
+                        if (res["code"] === 0) {
+                            var content = "";
+                            var usernames = res["data"];
+                            for (let i = 0; i < usernames.length; i++) {
+                                content += "<tr><td>" + i.toString() + "</td><td>" + usernames[i] + "</td><td>" + c_name.val() + "</td></tr>"
+                            }
+                            $("#t_body").html(content);
+                            $(".course").hide();
+                            $(".attend").hide();
+                            $(".choose").hide();
+                            $(".report").hide();
+                            $(".new_course").show();
+                        } else {
+                            alert(res["msg"]);
+                        }
+                    }, "json")
+                } else {
+                    alert("Please input course name and select student.")
+                }
+            })
+        </script>
+    </main>
+</body>
+
+</html>
